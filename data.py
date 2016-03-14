@@ -73,7 +73,8 @@ def extract_sentence_grammars(book_file, num_paragraphs=1000, sent_len_limit=150
     for paragraph in paragraphs:
         para_sentences = sent_tokenize(paragraph)
         sentences.extend([sent for sent in para_sentences
-                          if sent.strip() and len(sent) <= sent_len_limit])
+                          if sent.strip() and len(sent) <= sent_len_limit
+                          and '(' not in sent and ')' not in sent])
 
     grammars = compute_grammar(sentences)
     return sentences, grammars
