@@ -76,7 +76,7 @@ def extract_sentence_grammars(book_file, num_paragraphs=1000, sent_len_limit=150
                           if sent.strip() and len(sent) <= sent_len_limit])
 
     grammars = compute_grammar(sentences)
-    return zip(sentences, grammars)
+    return sentences, grammars
 
 
 def tokenize_sentence(s, lower=True):
@@ -86,7 +86,7 @@ def tokenize_sentence(s, lower=True):
     return word_tokenize(s)
 
 
-def tokenize_grammar(g):
+def tokenize_grammar(g, differentiate_closing_parens=True):
     """Tokenize linear parse tree g."""
     g = g.replace(')', ' )')
     init_tokens = g.split()
@@ -96,11 +96,34 @@ def tokenize_grammar(g):
         if ')' in tok:
             assert tok == ')'
             assert path
-            complement = path.pop()
-            out_tokens.append(complement.replace('(', ')'))
+            if differentiate_closing_parens:
+                complement = path.pop()
+                out_tokens.append(complement.replace('(', ')'))
+            else:
+                out_tokens.append(')')
         elif '(' in tok:
             path.append(tok)
             out_tokens.append(tok)
         else:  # leaf node is just a word
             out_tokens.append('XX')
     return out_tokens
+
+
+def create_word2idx(tokenized_sentences, min_word_count=25):
+    """Given list of tokenized sentences, returns proper indices for embeddings."""
+    word_counts = {}
+    for tokens in tokenized_sentences:
+        for tok in tokens:
+            if tok not in word_counts:
+                word_counts[tok] = 0
+            word_counts[tok] += 1
+
+    words = []
+    word2idx = {}
+    for word, count in word_counts.iteritems():
+        if count < min_word_count:
+            continue
+        word2idx[word] = len(words)
+        words.append(word)
+
+    return word2idx, words
