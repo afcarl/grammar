@@ -4,6 +4,21 @@ import os
 import subprocess
 
 PARSER_DIR = '~/berkeleyparser'
+GO  = '_GO'
+PAD = '_PAD'
+EOS = '_EOS'
+UNK = '_UNK'
+
+GO_ID  = 0
+PAD_ID = 1
+EOS_ID = 2
+UNK_ID = 3
+
+START_VOCAB = [GO, PAD, EOS, UNK]
+START_IDX = {GO: GO_ID,
+             PAD: PAD_ID,
+             EOS: EOS_ID,
+             UNK: UNK_ID}
 
 
 def get_book():
@@ -119,8 +134,8 @@ def create_word2idx(tokenized_sentences, min_word_count=25):
                 word_counts[tok] = 0
             word_counts[tok] += 1
 
-    words = []
-    word2idx = {}
+    words = START_VOCAB[:]
+    word2idx = dict(START_IDX)
     for word, count in word_counts.iteritems():
         if count < min_word_count:
             continue

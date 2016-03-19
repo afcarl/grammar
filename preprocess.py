@@ -34,7 +34,7 @@ def run():
     word2idx, words = data.create_word2idx(sentences, MIN_WORD_COUNT)
     gram2idx, grams = data.create_word2idx(grammars, min_word_count=0)
 
-    sentences = [[word2idx.get(ss, -1) for ss in s]
+    sentences = [[word2idx.get(ss, data.UNK_ID) for ss in s]
                  for s in sentences]
     grammars = [[gram2idx[gg] for gg in g] for g in grammars]
 
